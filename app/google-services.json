@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1030670374695",
+    "project_id": "foodforyou-41a0c",
+    "storage_bucket": "foodforyou-41a0c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030670374695:android:4632107dec1f3f9a877b02",
+        "android_client_info": {
+          "package_name": "uci.students.foodforyou"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030670374695-6obdevsdk63t6hkkmg3l2jnla9ehtccv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9TZw8PG7urwVJ8Rmk6s06_N2vr966ZG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030670374695-6obdevsdk63t6hkkmg3l2jnla9ehtccv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
