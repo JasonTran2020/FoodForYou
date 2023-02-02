@@ -1,4 +1,4 @@
-package uci.students.foodforyou
+package uci.students.foodforyou.Activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import uci.students.foodforyou.R
 
 class MainActivity : AppCompatActivity() {
     private val TAG="MainActivity"
