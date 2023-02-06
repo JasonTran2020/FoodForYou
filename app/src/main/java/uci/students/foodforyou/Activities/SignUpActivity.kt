@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import uci.students.foodforyou.R
 
@@ -42,11 +43,13 @@ class SignUpActivity : AppCompatActivity() {
 
     fun createNewUser()
     {
+        val firstName=etFirstName.text.toString()
+        val lastName=etLastName.text.toString()
         val email=etEmail.text.toString()
         val password=etPassword.text.toString()
         val confirmPassword=etConfirmPassword.text.toString()
 
-        if (email.isEmpty() or password.isEmpty() or confirmPassword.isEmpty())
+        if (email.isEmpty() or password.isEmpty() or confirmPassword.isEmpty() or firstName.isEmpty() or lastName.isEmpty())
         {
             Toast.makeText(baseContext,"Please fill in all fields",Toast.LENGTH_SHORT).show()
         }
@@ -57,6 +60,7 @@ class SignUpActivity : AppCompatActivity() {
         else{
             auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener {
                 if (it.isSuccessful){
+                    this.createNewUserInDatabase(firstName,lastName,email)
                     Log.d(TAG,"Created new user")
                     val loginIntent= Intent(this,LoginActivity::class.java)
                     Toast.makeText(baseContext,"Sign up success! Please login",Toast.LENGTH_SHORT).show()
@@ -66,8 +70,30 @@ class SignUpActivity : AppCompatActivity() {
                 {
                     Toast.makeText(baseContext,"Failed to sign up",Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
 
+    /**
+     * Firebase does not allow us to edit the authenticated user, so user related information is stored in the firebase databse
+     * We also need to make a separate user inside of their, though their is no password
+     */
+    fun createNewUserInDatabase( firstName: String, lastName: String, email: String)
+    {
+        val database=Firebase.database.reference
+        auth.currentUser?.let { user ->
+            database.child(getString(R.string.DatabaseUser)).child(user.uid).child(getString(R.string.DatabaseFirstName)).setValue(firstName)
+            database.child(getString(R.string.DatabaseUser)).child(user.uid).child(getString(R.string.DatabaseLastName)).setValue(lastName)
+            database.child(getString(R.string.DatabaseUser)).child(user.uid).child(getString(R.string.DatabaseEmail)).setValue(email).addOnCompleteListener {
+                if (it.isSuccessful)
+                {
+                    Log.d(TAG,"Created user in database as well")
 
+                }
+                else
+                {
+                    Log.e(TAG, "Failed to create user in database"+it.exception.toString())
+                }
             }
         }
     }
