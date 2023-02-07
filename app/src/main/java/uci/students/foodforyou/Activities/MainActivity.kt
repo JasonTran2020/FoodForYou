@@ -42,6 +42,12 @@ class MainActivity : AppCompatActivity() {
             finish()
             startActivity(intent)
         }
+
+        val btnTestSurvey=findViewById<Button>(R.id.btnTestSurvey)
+        btnTestSurvey.setOnClickListener {
+            intent =Intent(this,SurveyActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun saveData()
