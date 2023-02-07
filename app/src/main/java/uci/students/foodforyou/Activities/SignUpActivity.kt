@@ -64,6 +64,7 @@ class SignUpActivity : AppCompatActivity() {
                     Log.d(TAG,"Created new user")
                     val loginIntent= Intent(this,LoginActivity::class.java)
                     Toast.makeText(baseContext,"Sign up success! Please login",Toast.LENGTH_SHORT).show()
+                    finish()
                     startActivity(loginIntent)
                 }
                 else

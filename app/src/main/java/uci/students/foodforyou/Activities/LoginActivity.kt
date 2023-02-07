@@ -38,7 +38,9 @@ class LoginActivity : AppCompatActivity() {
 
         currentUser=auth.currentUser
         if (currentUser!=null){
+            //Head to the next activity and call finish() so you can't hit the back button
             val intent = Intent(this, MainActivity::class.java)
+            finish()
             startActivity(intent)
         }
 
@@ -60,6 +62,7 @@ class LoginActivity : AppCompatActivity() {
                     // Log the user in if successful
                     Log.d(TAG, "signInWithEmail:success")
                     val intent = Intent(this, MainActivity::class.java)
+                    finish()
                     startActivity(intent)
                 } else {
                     // Display an error message if failed
@@ -77,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
     fun goToSignUpScreen()
     {
         val intent=Intent(this,SignUpActivity::class.java)
+        finish()
         startActivity(intent)
     }
 }

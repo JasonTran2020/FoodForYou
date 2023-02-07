@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
             auth.signOut()
             Log.d(TAG,"Logging user out and return to login menu")
             intent = Intent(this, LoginActivity::class.java)
+            finish()
             startActivity(intent)
         }
     }
