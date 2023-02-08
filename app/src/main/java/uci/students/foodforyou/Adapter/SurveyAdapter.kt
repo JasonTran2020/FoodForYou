@@ -24,6 +24,7 @@ class SurveyAdapter(private val context: Context, private val surveyItems:List<S
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(surveyItems[position])
     }
+    fun getSelectedItems()=selectedItems
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
     {
