@@ -19,6 +19,8 @@ class SurveyActivity : AppCompatActivity() {
         surveyItems.add("Breakfast")
         surveyItems.add("Lunch")
         surveyItems.add("Dinner")
+        //Temp test for incorrect check marks due to poor recycling
+        //for (x in "abcedfejkawgohfdg") surveyItems.add(x.toString())
 
         rvSurvey=findViewById(R.id.rvSurvey)
         myAdapter=SurveyAdapter(this,surveyItems)
