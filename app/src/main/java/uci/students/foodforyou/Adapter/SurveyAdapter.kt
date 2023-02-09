@@ -26,6 +26,11 @@ class SurveyAdapter(private val context: Context, private val surveyItems:List<S
     }
     fun getSelectedItems()=selectedItems
 
+    /**
+     * Call this before moving to the next page, otherwise old selected content will remain in the selectedItems set
+     */
+    fun clearSelectedItems(){selectedItems.clear()}
+
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
     {
         //Technically it is a CheckBox, but I'll leave the suffix as btn since it is still a type of button

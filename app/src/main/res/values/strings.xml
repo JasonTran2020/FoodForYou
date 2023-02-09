@@ -3,9 +3,23 @@
     <string name="name">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="next">Next</string>
+
     <string name="DatabaseUser">food_users</string>
     <string name="DatabaseFirstName">first_name</string>
     <string name="DatabaseLastName">last_name</string>
     <string name="DatabaseEmail">email</string>
-    <string name="next">Next</string>
+    <string name="DatabaseUserSurvey">user_survey_preference</string>
+
+    <string name="DatabaseUserSurveyPreferredMeals">meals</string>
+    <string name="DatabaseUserSurveyMeals">meals</string>
+    <string name="DatabaseUserSurveyAllergy">allergies</string>
+    <string name="DatabaseUserSurveyCuisine">cuisine</string>
+
+
+    <string name="MealTypes">Breakfast,Lunch,Dinner</string>
+    <string name="AllergyTypes">Milk,Eggs,Fish,Shellfish,Peanuts,Wheat,Soybeans</string>
+    <string name="CuisineTypes">German,French,Italian,Russian,British,North American,South American,Mexican,Spanish,Indian,Middle Eastern,Chinese,Thai,Japanese,Korean,Vietnamese,Mediterranean,Greek</string>
+
+
 </resources>
