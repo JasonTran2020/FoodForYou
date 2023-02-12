@@ -20,6 +20,8 @@
     <string name="MealTypes">Breakfast,Lunch,Dinner</string>
     <string name="AllergyTypes">Milk,Eggs,Fish,Shellfish,Peanuts,Wheat,Soybeans</string>
     <string name="CuisineTypes">German,French,Italian,Russian,British,North American,South American,Mexican,Spanish,Indian,Middle Eastern,Chinese,Thai,Japanese,Korean,Vietnamese,Mediterranean,Greek</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

@@ -48,6 +48,11 @@ class MainActivity : AppCompatActivity() {
             intent =Intent(this,SurveyActivity::class.java)
             startActivity(intent)
         }
+        val appButton=findViewById<Button>(R.id.btnAppActi)
+        appButton.setOnClickListener {
+            intent =Intent(this,AppActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun saveData()
