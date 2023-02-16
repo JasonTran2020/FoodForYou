@@ -1,5 +1,6 @@
 package uci.students.foodforyou.Activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -35,7 +36,8 @@ class SurveyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_survey)
         // Map out of the page content by splitting the string by commas and saving it as a list in the value. The key is an int corresponding to the page
-        surveyPageContent=mapOf<Int,List<String>>(0 to getString(R.string.MealTypes).split(","),1 to getString(R.string.AllergyTypes).split(","),2 to getString(R.string.CuisineTypes).split(","))
+        // Like python, sorted creates a new list, although in kotlin, sorted is a method of a list as oppose to a function where you pass an iterable into it
+        surveyPageContent=mapOf<Int,List<String>>(0 to getString(R.string.MealTypes).split(","),1 to getString(R.string.AllergyTypes).split(",").sorted(),2 to getString(R.string.CuisineTypes).split(",").sorted())
         surveyPageNames=mapOf<Int,String>(0 to getString(R.string.DatabaseUserSurveyPreferredMeals),1 to getString(R.string.DatabaseUserSurveyAllergy),2 to getString(R.string.DatabaseUserSurveyCuisine))
         MAXPAGES=surveyPageContent.size
 
@@ -77,7 +79,10 @@ class SurveyActivity : AppCompatActivity() {
             loadPage(currentSurveyPage)
         }
         else{
-            //TODO Go to the next activity
+            //We do not start another activity which would go on the back stack, as this would mean the user would see the main acitvity twice when they hit the back button
+            //Once they've completed the survey
+            finish()
+
         }
     }
     private fun saveSurveyToDB(pageNum:Int): Unit

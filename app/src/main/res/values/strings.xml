@@ -18,8 +18,8 @@
 
 
     <string name="MealTypes">Breakfast,Lunch,Dinner</string>
-    <string name="AllergyTypes">Milk,Eggs,Fish,Shellfish,Peanuts,Wheat,Soybeans</string>
-    <string name="CuisineTypes">German,French,Italian,Russian,British,North American,South American,Mexican,Spanish,Indian,Middle Eastern,Chinese,Thai,Japanese,Korean,Vietnamese,Mediterranean,Greek</string>
+    <string name="AllergyTypes">Milk,Egg,Fish,Shellfish,Nut,Peanut,Wheat,Soybean,Vegetarian,Vegan,Pescatarian,Pork Free</string>
+    <string name="CuisineTypes">Greek,Southern US,Filipino,Indian,Jamaican,Spanish,Italian,Mexican,Chinese,British,Thai,Vietnamese,Cajun Creole,Brazilian,French,Japanese,Irish,Korean,Moroccan,Russian</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
