@@ -78,6 +78,7 @@ class PantryFragment : Fragment() {
                             for (item in products) {
                                 panIng.add(item)
                             }
+                            panAdapter.notifyDataSetChanged()
                         }
                     }
                 }
