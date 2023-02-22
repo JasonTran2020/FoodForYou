@@ -15,6 +15,7 @@
     <string name="DatabaseUserSurveyMeals">meals</string>
     <string name="DatabaseUserSurveyAllergy">allergies</string>
     <string name="DatabaseUserSurveyCuisine">cuisine</string>
+    <string name="DatabaseIngredientsPantry">user_pantry</string>
 
 
     <string name="MealTypes">Breakfast,Lunch,Dinner</string>

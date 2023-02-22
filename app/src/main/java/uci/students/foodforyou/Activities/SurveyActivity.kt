@@ -79,8 +79,9 @@ class SurveyActivity : AppCompatActivity() {
             loadPage(currentSurveyPage)
         }
         else{
-            //We do not start another activity which would go on the back stack, as this would mean the user would see the main acitvity twice when they hit the back button
-            //Once they've completed the survey
+            //Go to the main activity now that the user has completed the survey
+            val intent=Intent(this,MainActivity::class.java)
+            startActivity(intent)
             finish()
 
         }

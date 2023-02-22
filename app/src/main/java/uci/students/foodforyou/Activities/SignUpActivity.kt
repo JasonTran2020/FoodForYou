@@ -69,6 +69,7 @@ class SignUpActivity : AppCompatActivity() {
                 }
                 else
                 {
+                    //Log.d(TAG,it.result.toString())
                     Toast.makeText(baseContext,"Failed to sign up",Toast.LENGTH_SHORT).show()
                 }
             }

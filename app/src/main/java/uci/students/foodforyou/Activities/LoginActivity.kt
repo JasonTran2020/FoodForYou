@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import uci.students.foodforyou.R
 
@@ -39,9 +40,7 @@ class LoginActivity : AppCompatActivity() {
         currentUser=auth.currentUser
         if (currentUser!=null){
             //Head to the next activity and call finish() so you can't hit the back button
-            val intent = Intent(this, MainActivity::class.java)
-            finish()
-            startActivity(intent)
+            goToSurveyOrMain()
         }
 
 
@@ -61,9 +60,8 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Log the user in if successful
                     Log.d(TAG, "signInWithEmail:success")
-                    val intent = Intent(this, MainActivity::class.java)
-                    finish()
-                    startActivity(intent)
+                    goToSurveyOrMain()
+
                 } else {
                     // Display an error message if failed
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
@@ -80,7 +78,31 @@ class LoginActivity : AppCompatActivity() {
     fun goToSignUpScreen()
     {
         val intent=Intent(this,SignUpActivity::class.java)
-        finish()
         startActivity(intent)
     }
+
+    fun goToSurveyOrMain()
+    {
+        //Check if they have done the initial survey yet. Send them to survey if they have not, otherwise go to the main homescreen
+        val database=Firebase.database.reference
+        auth.currentUser?.let {
+            database.child(getString(R.string.DatabaseUserSurvey)).child(it.uid).get().addOnCompleteListener {
+                //Go to main menu
+                if (it.result.value!=null)
+                {
+                    val intent = Intent(this, MainActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
+                //Go to survey
+                else
+                {
+                    val intent = Intent(this, SurveyActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
+            }
+        }
+    }
+
 }
