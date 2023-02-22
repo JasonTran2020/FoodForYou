@@ -43,9 +43,9 @@ class PantryFragment : Fragment() {
         auth= Firebase.auth
         listDisplay = view.findViewById<ListView>(R.id.pantryDisplay)
         initializeList()
-        panAdapter = ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, panIng)
+        panAdapter = ArrayAdapter(view.context, android.R.layout.simple_list_item_1, panIng)
         listDisplay.adapter = panAdapter
-        //Button to get the string ingredient to add or delete
+        //Button to get the string ingredient to add
         view.findViewById<Button>(R.id.addItemButt).setOnClickListener{
             ingInput = view.findViewById(R.id.ingToAddDel)
             val ingredient = ingInput.getText().toString()
@@ -55,14 +55,15 @@ class PantryFragment : Fragment() {
                 updateList()
             }
         }
-        view.findViewById<Button>(R.id.delItemButt).setOnClickListener{
-            ingInput = view.findViewById(R.id.ingToAddDel)
-            val ingredient = ingInput.getText().toString()
-            if (ingredient.isEmpty()==false) {
-                ingInput.getText().clear()
-                panIng.remove(ingredient)
-                updateList()
-            }
+
+        //Set up to remove an ingredient when holding down on the item
+        listDisplay.setOnItemLongClickListener { adapterView, view, i, l ->
+            val removedIngredient=panIng[i]
+            panAdapter.remove(panIng[i])
+            //panIng.removeAt(i)
+            Toast.makeText(view.context,"$removedIngredient removed",Toast.LENGTH_SHORT).show()
+            updateList()
+            true
         }
     }
 
@@ -70,7 +71,7 @@ class PantryFragment : Fragment() {
     {
         val user = Firebase.auth.currentUser
         user?.let {
-            database.child("food_users").child(it.uid).child("user_pantry").get().addOnCompleteListener {
+            database.child("user_pantry").child(it.uid).get().addOnCompleteListener {
                 if (it.isSuccessful) {
                     if (it.result.value != null) {
                         val products = it.result.value as List<String>
@@ -89,7 +90,7 @@ class PantryFragment : Fragment() {
     {
         val user = Firebase.auth.currentUser
         user?.let {
-            database.child("food_users").child(it.uid).child("user_pantry").setValue(panIng)
+            database.child("user_pantry").child(it.uid).setValue(panIng)
         }
         panAdapter.notifyDataSetChanged()
     }
