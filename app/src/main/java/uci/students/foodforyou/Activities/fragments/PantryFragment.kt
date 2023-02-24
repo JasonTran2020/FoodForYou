@@ -76,6 +76,8 @@ class PantryFragment : Fragment() {
                     if (it.result.value != null) {
                         val products = it.result.value as List<String>
                         if (products.isEmpty() == false) {
+                            //Clear panIng first as it made already have content from switching off this fragment and back
+                            panIng.clear()
                             for (item in products) {
                                 panIng.add(item)
                             }
