@@ -79,7 +79,7 @@ class SignUpActivity : AppCompatActivity() {
 
     /**
      * Firebase does not allow us to edit the authenticated user, so user related information is stored in the firebase databse
-     * We also need to make a separate user inside of their, though their is no password
+     * We also need to make a separate user inside of their, though there is no password
      */
     fun createNewUserInDatabase( firstName: String, lastName: String, email: String)
     {
