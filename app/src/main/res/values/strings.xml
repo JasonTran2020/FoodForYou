@@ -17,6 +17,8 @@
     <string name="DatabaseUserSurveyCuisine">cuisine</string>
     <string name="DatabaseIngredientsPantry">user_pantry</string>
 
+    <string name="DatabasePersonalModel">user_personal_model</string>
+
 
     <string name="MealTypes">Breakfast,Lunch,Dinner</string>
     <string name="AllergyTypes">Milk,Egg,Fish,Shellfish,Nut,Peanut,Wheat,Soybean,Vegetarian,Vegan,Pescatarian,Pork Free</string>

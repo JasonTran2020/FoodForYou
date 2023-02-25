@@ -61,6 +61,7 @@ class SignUpActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener {
                 if (it.isSuccessful){
                     this.createNewUserInDatabase(firstName,lastName,email)
+                    this.createNewPersonalModelInDatabase()
                     Log.d(TAG,"Created new user")
                     val loginIntent= Intent(this,LoginActivity::class.java)
                     Toast.makeText(baseContext,"Sign up success! Please login",Toast.LENGTH_SHORT).show()
@@ -95,6 +96,29 @@ class SignUpActivity : AppCompatActivity() {
                 else
                 {
                     Log.e(TAG, "Failed to create user in database"+it.exception.toString())
+                }
+            }
+        }
+    }
+
+    /**
+     * Save a map representing the personal model about a user's likes and dislikes in terms of cuisine
+     * Each cuisine is initially assigned a value of 0
+     */
+    fun createNewPersonalModelInDatabase()
+    {
+        //Initialize a map with values as zeros and keys as
+        val cuisineMap=getString(R.string.CuisineTypes).split(",").associateBy({it},{0.0})
+
+        val database=Firebase.database.reference
+        auth.currentUser?.let { user->
+            database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).setValue(cuisineMap).addOnCompleteListener {
+                if (it.isSuccessful)
+                {
+                    Log.d(TAG,"Created a personal model for the user")
+                }
+                else{
+                    Log.e(TAG, "Failed to save initial personal model to database"+it.exception.toString())
                 }
             }
         }

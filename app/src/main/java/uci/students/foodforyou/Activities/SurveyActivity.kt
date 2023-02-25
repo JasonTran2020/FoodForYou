@@ -3,6 +3,7 @@ package uci.students.foodforyou.Activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
@@ -114,6 +115,10 @@ class SurveyActivity : AppCompatActivity() {
                 database.child(getString(R.string.DatabaseUserSurvey)).child(it.uid).child(currentPageTitle).setValue(selectedItems.toList()).addOnCompleteListener {
                     if (it.isSuccessful){
                         Toast.makeText(baseContext,"Saved part of the survey check database",Toast.LENGTH_SHORT).show()
+                        if (currentPageTitle=="cuisine")
+                        {
+                            this.assignValuesToPersonalModel(selectedItems.toList())
+                        }
                     }
                     else{
                         Toast.makeText(baseContext,"Failed to save survey",Toast.LENGTH_SHORT).show()
@@ -133,6 +138,29 @@ class SurveyActivity : AppCompatActivity() {
         surveyPageContent[pageNum]?.let { surveyItems.addAll(0, it) }
         myAdapter.clearSelectedItems()
         myAdapter.notifyDataSetChanged()
+    }
+
+    private fun assignValuesToPersonalModel(listOfCuisines:List<String>)
+    {
+        auth.currentUser?.let{user->
+            database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).get().addOnCompleteListener {
+                if (it.result.value!=null)
+                {
+                    //For each cuisine that was selected, assign them an initial score of 5.0
+                    val cuisineModel=it.result.value as MutableMap<String,Double>
+                    for (cuisine in listOfCuisines)
+                    {
+                        cuisineModel[cuisine]=5.0
+                    }
+                    //Now save the model to the same user
+                    database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).setValue(cuisineModel)
+                }
+                else{
+                    Log.e(TAG,"Failed to save initial cuisine scores")
+                }
+            }
+
+        }
     }
 
 
