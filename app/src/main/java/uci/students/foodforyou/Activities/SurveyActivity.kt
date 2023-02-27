@@ -47,7 +47,6 @@ class SurveyActivity : AppCompatActivity() {
         //though this should never be the case
         surveyPageContent[currentSurveyPage]?.let { surveyItems.addAll(0, it) }
 
-
         //Temp test for incorrect check marks due to poor recycling
         //for (x in "abcedfejkawgohfdg") surveyItems.add(x.toString())
         btnNextSurvey=findViewById<Button>(R.id.btnNextSurvey)
@@ -58,6 +57,12 @@ class SurveyActivity : AppCompatActivity() {
 
         //Attach the right objects to the recycler view. Using a GridLayoutManager
         rvSurvey.adapter=myAdapter
+
+        // if it is an allergy edit, only update allergy page
+        if(intent.hasExtra("editAlgy")){
+            loadPage(1)
+        }
+
         rvSurvey.layoutManager=GridLayoutManager(this,2)
 
 
@@ -71,8 +76,15 @@ class SurveyActivity : AppCompatActivity() {
      */
     private fun onPressNextSurveyListener():Unit
     {
+        // if it is an allergy edit, only update allergy page
+        if(intent.hasExtra("editAlgy")){
+            saveSurveyToDB(1)
+            finish()
+            return
+        }
         // Save whatever is selected on the recyclerView to Firebase
         saveSurveyToDB(currentSurveyPage)
+
         //Increment the page and wipe out current content on in surveyItems.
         // Take not that modifying surveyItems without notifying the adapter can cause some undefined behavior, which is specifically why surveyItems.clear() is in loadPage
         currentSurveyPage+=1
@@ -84,7 +96,6 @@ class SurveyActivity : AppCompatActivity() {
             val intent=Intent(this,MainActivity::class.java)
             startActivity(intent)
             finish()
-
         }
     }
     private fun saveSurveyToDB(pageNum:Int): Unit

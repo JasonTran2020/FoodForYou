@@ -1,14 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/user_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/welcomeUser"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/profEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="@string/DatabaseEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_welcome" />
+
+    <TextView
+        android:id="@+id/profFirstName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        android:layout_marginEnd="2dp"
+        android:text="@string/DatabaseFirstName"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/profEmail"
+        app:layout_constraintEnd_toStartOf="@+id/profLastName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_welcome" />
+
+    <TextView
+        android:id="@+id/profLastName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/DatabaseLastName"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/profEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/profFirstName"
+        app:layout_constraintTop_toBottomOf="@+id/user_welcome" />
+
+    <Button
+        android:id="@+id/allergyBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="128dp"
+        android:text="@string/DatabaseUserSurveyAllergy"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/profEmail" />
+
+    <ImageView
+        android:id="@+id/profPicture"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:contentDescription="@string/userImage"
+        android:src="@drawable/baseline_person_24"
+        app:layout_constraintBottom_toTopOf="@+id/allergyBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profEmail" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
