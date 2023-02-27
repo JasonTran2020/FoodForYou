@@ -32,10 +32,10 @@ class AppActivity : AppCompatActivity() {
         val fragmentManager: FragmentManager = supportFragmentManager
 
         //Create the list of Recipes here, rather than in the fragment. Any of the fragments will be able to retrieve the lists from here
-        breakfastRecipes=createRecipeListFromJSONFile("breakfast.json")
+        breakfastRecipes=createRecipeListFromJSONFile("recipe_database/breakfast.json")
         Log.d(TAG,breakfastRecipes.toString())
-        lunchRecipes=createRecipeListFromJSONFile("lunch.json")
-        dinnerRecipes=createRecipeListFromJSONFile("dinner.json")
+        lunchRecipes=createRecipeListFromJSONFile("recipe_database/lunch.json")
+        dinnerRecipes=createRecipeListFromJSONFile("recipe_database/dinner.json")
         Log.d(TAG,"When parsing the recipes from JSON, $missedRecipeCount were unabled to be parsed")
         //Change fragments depending on which option is selected on the bottom navigation
         findViewById<BottomNavigationView>(R.id.bottom_navigation).setOnItemSelectedListener {
