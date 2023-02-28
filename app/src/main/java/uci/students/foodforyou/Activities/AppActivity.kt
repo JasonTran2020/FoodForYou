@@ -37,6 +37,16 @@ class AppActivity : AppCompatActivity() {
         lunchRecipes=createRecipeListFromJSONFile("recipe_database/lunch.json")
         dinnerRecipes=createRecipeListFromJSONFile("recipe_database/dinner.json")
         Log.d(TAG,"When parsing the recipes from JSON, $missedRecipeCount were unabled to be parsed")
+
+        val ingredientsToStemmedIngredient = createMapFromJSONFile("ingredient_to_stemmed_ingredient.json")
+        val breakfastDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/breakfast.json")
+        val lunchDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/lunch.json")
+        val dinnerDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/dinner.json")
+
+        //debugging REMOVE
+        Log.d(TAG, "ingredients " + ingredientsToStemmedIngredient.toString())
+        Log.d(TAG, "dinner recipes: " + dinnerDietaryRestrictions.toString())
+
         //Change fragments depending on which option is selected on the bottom navigation
         findViewById<BottomNavigationView>(R.id.bottom_navigation).setOnItemSelectedListener {
             item ->
@@ -93,6 +103,25 @@ class AppActivity : AppCompatActivity() {
         //This list should not be modified, and hence we return by calling toList() which makes the object we return immutable
         return recipesList.toList()
 
+    }
+
+    fun createMapFromJSONFile(jsonFilePath: String): Map<String, *> {
+        val jsonFileAsString = this.assets.open(jsonFilePath).bufferedReader().readText()
+        return JSONObject(jsonFileAsString).toMap()
+    }
+
+    fun JSONObject.toMap(): Map<String, *> = keys().asSequence().associateWith {
+        when (val value = this[it])
+        {
+            is JSONArray ->
+            {
+                val map = (0 until value.length()).associate { Pair(it.toString(), value[it]) }
+                JSONObject(map).toMap().values.toList()
+            }
+            is JSONObject -> value.toMap()
+            JSONObject.NULL -> null
+            else            -> value
+        }
     }
 
 }
