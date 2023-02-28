@@ -53,6 +53,16 @@ class MainActivity : AppCompatActivity() {
             intent =Intent(this,AppActivity::class.java)
             startActivity(intent)
         }
+        val recVButt=findViewById<Button>(R.id.btntestReEx)
+        recVButt.setOnClickListener{
+            intent = Intent(this,DisplayActivity::class.java)
+            intent.putExtra("name","Pomegranate Yogurt Bowl")
+            intent.putExtra("url","http://www.101cookbooks.com/archives/pomegranate-yogurt-bowl-recipe.html")
+            intent.putExtra("image","http://www.101cookbooks.com/mt-static/images/food/breakfast_yogurt_bowl.jpg")
+            val ingred = mutableListOf("apple", "bananan", "orange", "a big dollop of greek yogurt", "fresh pomegranate juice", "a drizzle of honey", "a handful of puffed quinoa crisps", "sprinkling of toasted sunflower seeds")
+            intent.putExtra("ingredients", ArrayList<String>(ingred))
+            startActivity(intent)
+        }
     }
 
     fun saveData()
