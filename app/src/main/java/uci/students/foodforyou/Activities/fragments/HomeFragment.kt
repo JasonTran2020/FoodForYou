@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import uci.students.foodforyou.Activities.AppActivity
 import uci.students.foodforyou.Adapter.RecipeAdapter
 import uci.students.foodforyou.Models.AppActivityViewModel
@@ -20,7 +23,9 @@ class HomeFragment : Fragment() {
     lateinit var postRecyclerView: RecyclerView
     lateinit var recipesViewModel:AppActivityViewModel
     lateinit var recipesAdapter:RecipeAdapter
+    val listOfPantryIngredients= mutableListOf<String>()
     val recommendedRecipes= mutableListOf<Recipe>()
+    val missingIngredientsForEachRecipe= mutableListOf<List<String>>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,7 +50,57 @@ class HomeFragment : Fragment() {
         postRecyclerView.adapter=recipesAdapter
         postRecyclerView.layoutManager=LinearLayoutManager(context)
         //Next steps
-        // Set click listeners for each recipe. Liekly done in the adapter
+        // Set click listeners for each recipe. Likely done in the adapter
         // Find a default image for food, because there are way too many dead images
+        setupCurrentIngredients()
+    }
+
+    fun setupCurrentIngredients() {
+        val database= Firebase.database.reference
+        val auth= Firebase.auth
+        val user= auth.currentUser ?: return
+
+        database.child(getString(R.string.DatabaseIngredientsPantry)).child(user.uid).get().addOnCompleteListener {
+            if (it.isSuccessful && it.result.value!=null)
+            {
+                listOfPantryIngredients.clear()
+                listOfPantryIngredients.addAll(it.result.value as List<String>)
+
+            }
+            //For each recipe, add the missing ingredients to the object
+            for (recipe in recommendedRecipes)
+            {
+                recipe.missingIngredient.clear()
+                recipe.missingIngredient.addAll(getListOfMissingIngredient(recipe,listOfPantryIngredients))
+            }
+            recipesAdapter.notifyDataSetChanged()
+
+
+        }
+    }
+
+    /**
+     * A function for determining what ingredients are missing given the recipe and the availible ingredients
+     * Due to the possibility that the recipe's ingredients are overly specified(i.e., yolk of eggs), while a user puts a much more simple ingredients (i.e. eggs)
+     * This functions considers an ingredient to be shared if an ingredient from the user is a sub-sequence of an ingredient from the recipe
+     */
+    fun getListOfMissingIngredient(recipe:Recipe,userIngredients:List<String>): List<String> {
+        //missingRecipeIngredients needs to be a copy of recipe.ingredients as we will be modifying recipeIngredients to contain only the missing ingredients
+        val missingRecipeIngredients=recipe.ingredients.toMutableList()
+
+        for (item in userIngredients)
+        {
+            val ingIterator = missingRecipeIngredients.iterator()
+            while (ingIterator.hasNext())
+            {
+                val item2 = ingIterator.next()
+                if (item2.contains(item,true))
+                {
+                    ingIterator.remove()
+                }
+            }
+        }
+        Log.i(TAG,missingRecipeIngredients.toString())
+        return missingRecipeIngredients.toList()
     }
 }

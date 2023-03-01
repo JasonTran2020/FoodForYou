@@ -1,6 +1,7 @@
 package uci.students.foodforyou.Adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import uci.students.foodforyou.Activities.DisplayActivity
 import uci.students.foodforyou.Models.Recipe
 import uci.students.foodforyou.R
 
@@ -41,7 +43,15 @@ class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>) :
             //Load the image into the ImageView
             Glide.with(itemView).load(recipe.imageUrl).into(ivRecipeImage)
 
-            //TODO("Finish adding the other content and setting on click listern for btnCook")
+            tvMissingIngr.text=recipe.missingIngredient.joinToString(", ")
+            //TODO("Finish adding the other content and setting on click listen for btnCook")
+            btnCook.setOnClickListener {
+                val intent = Intent(context, DisplayActivity::class.java)
+                //A Recipe is Parcelable, so we can just pass the object in as an extra for the Intent
+                intent.putExtra("ParcelableRecipe",recipe)
+                //We do not call finish as we want the user to be able to return back here
+                context.startActivity(intent)
+            }
         }
     }
 }

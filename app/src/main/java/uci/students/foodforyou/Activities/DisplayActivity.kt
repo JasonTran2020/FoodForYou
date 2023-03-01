@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import android.widget.Toast
+import uci.students.foodforyou.Models.Recipe
 
 
 class DisplayActivity : AppCompatActivity() {
@@ -29,13 +30,31 @@ class DisplayActivity : AppCompatActivity() {
     private lateinit var ingAdapter: ArrayAdapter<String>
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var name:String
+    private lateinit var ings:List<String>
+    private lateinit var instruct:String
+    private lateinit var image:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display)
-        val name:String = intent.getStringExtra("name").toString()
-        val ings:List<String> = intent.getStringArrayListExtra("ingredients") as List<String>
-        val instruct:String = intent.getStringExtra("url").toString()
-        val image:String = intent.getStringExtra("image").toString()
+
+        //This should be the primary way of getting data from the intent now, but the old code (else block) is still here to prevent crashes when
+        //Launching this activity with the test button
+        if (intent.hasExtra("ParcelableRecipe"))
+        {
+            val recipe=intent.getParcelableExtra<Recipe>("ParcelableRecipe")
+            name= recipe!!.name
+            ings = recipe.ingredients
+            instruct= recipe.webpageUrl
+            image= recipe.imageUrl
+        }
+        else{
+            name = intent.getStringExtra("name").toString()
+            ings = intent.getStringArrayListExtra("ingredients") as List<String>
+            instruct= intent.getStringExtra("url").toString()
+            image= intent.getStringExtra("image").toString()
+        }
+
         database=Firebase.database.reference
         auth= Firebase.auth
         cookButt = findViewById(R.id.cookBut)

@@ -15,11 +15,12 @@
         android:inputType="textMultiLine"
         android:scrollHorizontally="false"
         android:textSize="20sp"
-        app:layout_constrainedWidth="true"
+        android:textStyle="bold"
 
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constrainedWidth="true"
         app:layout_constraintLeft_toRightOf="@id/ivRecipeImage"
 
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name" />
 
@@ -35,14 +36,16 @@
 
     <TextView
         android:id="@+id/tvMissingIngr"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="40dp"
-        android:text="Missing Ingredient"
+        android:layout_marginTop="16dp"
         android:textSize="15sp"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/ivRecipeImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:text="Lemons, pie, salt" />
 
     <Button
         android:id="@+id/btnCook"
@@ -53,6 +56,17 @@
         android:text="Cook Now"
         app:layout_constraintLeft_toRightOf="@+id/ivRecipeImage"
         app:layout_constraintTop_toBottomOf="@+id/tvMissingIngr" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:text="Missing Ingredients"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/ivRecipeImage"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
