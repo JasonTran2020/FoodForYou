@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.json.JSONArray
 import org.json.JSONException
@@ -12,6 +13,7 @@ import org.json.JSONObject
 import uci.students.foodforyou.Activities.fragments.HomeFragment
 import uci.students.foodforyou.Activities.fragments.PantryFragment
 import uci.students.foodforyou.Activities.fragments.ProfileFragment
+import uci.students.foodforyou.Models.AppActivityViewModel
 import uci.students.foodforyou.Models.Recipe
 import uci.students.foodforyou.R
 
@@ -20,6 +22,7 @@ class AppActivity : AppCompatActivity() {
     lateinit var breakfastRecipes: List<Recipe>
     lateinit var lunchRecipes: List<Recipe>
     lateinit var dinnerRecipes: List<Recipe>
+    lateinit var recipesViewModel:AppActivityViewModel
     var missedRecipeCount=0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +31,7 @@ class AppActivity : AppCompatActivity() {
         //Create and store the fragment instances as oppose to creating new ones each time
         val homeFragment=HomeFragment()
         val pantryFragment=PantryFragment()
-        val profileFragment=ProfileFragment()
+        val profileFragment= ProfileFragment()
         val fragmentManager: FragmentManager = supportFragmentManager
 
         //Create the list of Recipes here, rather than in the fragment. Any of the fragments will be able to retrieve the lists from here
@@ -37,6 +40,9 @@ class AppActivity : AppCompatActivity() {
         lunchRecipes=createRecipeListFromJSONFile("recipe_database/lunch.json")
         dinnerRecipes=createRecipeListFromJSONFile("recipe_database/dinner.json")
         Log.d(TAG,"When parsing the recipes from JSON, $missedRecipeCount were unabled to be parsed")
+
+        recipesViewModel=ViewModelProvider(this).get(AppActivityViewModel::class.java)
+        recipesViewModel.setRecipes(breakfastRecipes,lunchRecipes,dinnerRecipes)
 
         val ingredientsToStemmedIngredient = createMapFromJSONFile("ingredient_to_stemmed_ingredient.json")
         val breakfastDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/breakfast.json")
