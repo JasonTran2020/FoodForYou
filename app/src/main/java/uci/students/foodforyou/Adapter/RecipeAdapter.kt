@@ -41,7 +41,7 @@ class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>) :
             tvRecipeName.text=recipe.name
 
             //Load the image into the ImageView
-            Glide.with(itemView).load(recipe.imageUrl).into(ivRecipeImage)
+            Glide.with(itemView).load(recipe.imageUrl).error("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdrAYfsGt5sbUrmjHD_fLDuymf2GcjDji78ed2GOg&s").into(ivRecipeImage)
 
             tvMissingIngr.text=recipe.missingIngredient.joinToString(", ")
             //TODO("Finish adding the other content and setting on click listen for btnCook")
