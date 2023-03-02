@@ -46,8 +46,10 @@ class HomeFragment : Fragment() {
         recipesViewModel= ViewModelProvider(activity as AppActivity).get(AppActivityViewModel::class.java)
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
 
+        getUsersDietaryRestrictions()
+        getUsersCuisinePreferences().
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
-        recommendedRecipes.addAll(0,recipesViewModel.lunchRecipes)
+        recommendedRecipes.addAll(0,recommendRecipes())
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
@@ -58,10 +60,7 @@ class HomeFragment : Fragment() {
         // Find a default image for food, because there are way too many dead images
         setupCurrentIngredients()
         Log.d(TAG, "set up ingredients")
-        getUsersDietaryRestrictions()
-        Log.d(TAG, "set up dietary restrictions $userDietaryRestrictions")
-//        getUsersCuisinePreferences()
-//        Log.d(TAG, "set up cuisine preferences " + userCuisinePreferences.toString())
+
         // make function to get cuisine preferences, dietary restrictions
     }
 
@@ -112,10 +111,17 @@ class HomeFragment : Fragment() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
         val user= auth.currentUser ?: return
-        val cuisinePreferences = database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).get() as MutableMap<String, Int>
-        Log.d(TAG, "cuisine preferences $cuisinePreferences")
+        database.child("user_personal_model").child(user.uid).get().addOnCompleteListener {
+            if (it.isSuccessful && it.result.value != null) {
+                userCuisinePreferences.clear()
+                val preferences = it.result.value as Map<String, Int>
+                for(entry in preferences) {
+                    userCuisinePreferences[entry.key] = entry.value
+                }
+            }
+            Log.d(TAG, "testing123 $userCuisinePreferences")
+        }
 
-        userCuisinePreferences.putAll(database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).get() as MutableMap<String, Int>)
     }
 
     /**
@@ -170,20 +176,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    private fun getDietaryRestrictions(): Map<String, *> {
-//        return when (getMealType()) {
-//            "breakfast" -> {
-//                recipesViewModel.breakfastDietaryRestrictions
-//            }
-//            "lunch" -> {
-//                recipesViewModel.lunchDietaryRestrictions
-//            }
-//            else -> {
-//                recipesViewModel.dinnerDietaryRestrictions
-//            }
-//        }
-//    }
-
     private fun getUsersStemmedIngredients(): List<String> {
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
         val stemmedIngredients = mutableListOf<String>()
@@ -195,7 +187,7 @@ class HomeFragment : Fragment() {
         return stemmedIngredients
     }
 
-    fun recommendRecipes(): List<Recipe> {
+    fun recommendRecipes(): MutableList<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
         val usersIngredients = getUsersStemmedIngredients()
@@ -219,7 +211,10 @@ class HomeFragment : Fragment() {
                     ingredientsInPantry += 1
                 }
             }
-            val recipeRating = (ingredientsInPantry / requiredIngredients.size) * (1 + 0.05 * userCuisinePreferences[recipe.cuisine]!!)
+            var recipeRating = 0.0
+            if (recipe.cuisine in userCuisinePreferences) {
+                recipeRating = (ingredientsInPantry / requiredIngredients.size) * (1 + 0.05 * userCuisinePreferences[recipe.cuisine] as Int)
+            }
             recipeRatings[recipe] = recipeRating
         }
 
