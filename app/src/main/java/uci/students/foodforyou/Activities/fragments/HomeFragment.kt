@@ -59,7 +59,7 @@ class HomeFragment : Fragment() {
         setupCurrentIngredients()
         Log.d(TAG, "set up ingredients")
         getUsersDietaryRestrictions()
-        Log.d(TAG, "set up dietary restrictions " + userDietaryRestrictions.toString())
+        Log.d(TAG, "set up dietary restrictions $userDietaryRestrictions")
 //        getUsersCuisinePreferences()
 //        Log.d(TAG, "set up cuisine preferences " + userCuisinePreferences.toString())
         // make function to get cuisine preferences, dietary restrictions
@@ -91,17 +91,17 @@ class HomeFragment : Fragment() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
         val user= auth.currentUser ?: return
-
-        database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).child("allergies").get().addOnCompleteListener {
+        database.child("user_survey_preference").child(user.uid).child("allergies").get().addOnCompleteListener {
             if (it.isSuccessful && it.result.value != null) {
                 userDietaryRestrictions.clear()
+                Log.d(TAG, "aaaaa" + it.result)
+                Log.d(TAG, "bbbbb" + (it.result.value as Any).javaClass.name)
                 for (dietaryRestriction in it.result.value as List<String>) {
-                    if ((dietaryRestriction) in formatRestrictions) {
-                        formatRestrictions[dietaryRestriction]?.let { it1 ->
-                            userDietaryRestrictions.add(
-                                it1
-                            )
-                        }
+                    Log.d(TAG, "ccc " + dietaryRestriction)
+                    Log.d(TAG, "ddd" + formatRestrictions[dietaryRestriction].toString())
+                    if (dietaryRestriction in formatRestrictions) {
+                        val restriction = formatRestrictions[dietaryRestriction] as String
+                        userDietaryRestrictions.add(restriction)
                     }
                 }
             }
@@ -112,6 +112,8 @@ class HomeFragment : Fragment() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
         val user= auth.currentUser ?: return
+        val cuisinePreferences = database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).get() as MutableMap<String, Int>
+        Log.d(TAG, "cuisine preferences $cuisinePreferences")
 
         userCuisinePreferences.putAll(database.child(getString(R.string.DatabasePersonalModel)).child(user.uid).get() as MutableMap<String, Int>)
     }
@@ -168,19 +170,19 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun getDietaryRestrictions(): Map<String, *> {
-        return when (getMealType()) {
-            "breakfast" -> {
-                recipesViewModel.breakfastDietaryRestrictions
-            }
-            "lunch" -> {
-                recipesViewModel.lunchDietaryRestrictions
-            }
-            else -> {
-                recipesViewModel.dinnerDietaryRestrictions
-            }
-        }
-    }
+//    private fun getDietaryRestrictions(): Map<String, *> {
+//        return when (getMealType()) {
+//            "breakfast" -> {
+//                recipesViewModel.breakfastDietaryRestrictions
+//            }
+//            "lunch" -> {
+//                recipesViewModel.lunchDietaryRestrictions
+//            }
+//            else -> {
+//                recipesViewModel.dinnerDietaryRestrictions
+//            }
+//        }
+//    }
 
     private fun getUsersStemmedIngredients(): List<String> {
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
