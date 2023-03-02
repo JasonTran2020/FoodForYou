@@ -45,9 +45,14 @@ class AppActivity : AppCompatActivity() {
         recipesViewModel.setRecipes(breakfastRecipes,lunchRecipes,dinnerRecipes)
 
         val ingredientsToStemmedIngredient = createMapFromJSONFile("ingredient_to_stemmed_ingredient.json")
+
+        recipesViewModel.setIngredientsToStemmedIngredients(ingredientsToStemmedIngredient)
+
         val breakfastDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/breakfast.json")
         val lunchDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/lunch.json")
         val dinnerDietaryRestrictions = createMapFromJSONFile("dietary_restrictions_data/dinner.json")
+
+        recipesViewModel.setDietaryRestrictions(breakfastDietaryRestrictions, lunchDietaryRestrictions, dinnerDietaryRestrictions)
 
         //debugging REMOVE
         Log.d(TAG, "ingredients " + ingredientsToStemmedIngredient.toString())
