@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
 
         getUsersDietaryRestrictions()
-        getUsersCuisinePreferences().
+        getUsersCuisinePreferences()
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
         recommendedRecipes.addAll(0,recommendRecipes())
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
