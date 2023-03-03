@@ -27,9 +27,12 @@ class HomeFragment : Fragment() {
     val listOfPantryIngredients= mutableListOf<String>()
     val recommendedRecipes= mutableListOf<Recipe>()
     val missingIngredientsForEachRecipe= mutableListOf<List<String>>()
+
     val userDietaryRestrictions = mutableListOf<String>()
+
     val formatRestrictions = mapOf("Vegan" to "vegan", "Vegetarian" to "vegetarian", "Pescatarian" to "pescatarian", "Milk" to "milk-free", "Egg" to "egg-free", "Fish" to "fish-free", "Shellfish" to "shellfish-free", "Nuts" to "nut-free", "Peanuts" to "peanut-free", "Soy" to "soy-free", "Pork" to "pork-free")
     var userCuisinePreferences = mutableMapOf<String, Int>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,7 +50,7 @@ class HomeFragment : Fragment() {
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
 
         getUsersDietaryRestrictions()
-        getUsersCuisinePreferences().
+        getUsersCuisinePreferences()
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
         recommendedRecipes.addAll(0,recommendRecipes())
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
@@ -121,7 +124,6 @@ class HomeFragment : Fragment() {
             }
             Log.d(TAG, "testing123 $userCuisinePreferences")
         }
-
     }
 
     /**
@@ -176,33 +178,46 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun getUsersStemmedIngredients(): List<String> {
-        val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
-        val stemmedIngredients = mutableListOf<String>()
-        for (ingredient in listOfPantryIngredients) {
-            if (ingredient.lowercase() in ingredientToStemmedIngredient) {
-                stemmedIngredients.add(ingredientToStemmedIngredient[ingredient] as String)
+    private fun getUsersStemmedIngredients(): MutableList<String> {
+        val database= Firebase.database.reference
+        val auth= Firebase.auth
+        val user= auth.currentUser ?: return mutableListOf()
+        var usersIngredients = mutableListOf<String>()
+
+        database.child("user_pantry").child(user.uid).get().addOnCompleteListener {
+            if (it.isSuccessful && it.result.value != null) {
+                Log.d(TAG, "debugga " + it.result.value.toString())
+                Log.d(TAG, "debugga2" + recipesViewModel.ingredientsToStemmed)
+                for (ingredient in it.result.value as List<String>) {
+                    Log.d(TAG, ingredient.toString() + " testing")
+                    if (ingredient.lowercase() in recipesViewModel.ingredientsToStemmed) {
+                        Log.d(TAG, ingredient.toString() + " in dictionary")
+                        usersIngredients.add(ingredient)
+                        Log.d(TAG, usersIngredients.toString())
+                    }
+                }
             }
         }
-        return stemmedIngredients
+        return usersIngredients
     }
 
     fun recommendRecipes(): MutableList<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
         val usersIngredients = getUsersStemmedIngredients()
+        Log.d(TAG, "USERSINGREDIENTS " + usersIngredients)
         val recipeRatings = mutableMapOf<Recipe, Double>()
         for (i in recipes.indices) {
             val recipe = recipes[i] as Recipe
             // check adheres to dietary restrictions here
-            if (userDietaryRestrictions.size > 0) {
-                for (dietaryRestriction in userDietaryRestrictions) {
-                    if (dietaryRestriction !in recipe.dietaryCompliances) {
-                        recipeRatings[recipe] = 0.0
-                        continue
-                    }
-                }
-            }
+//            if (userDietaryRestrictions.size > 0) {
+//                for (dietaryRestriction in userDietaryRestrictions) {
+//                    if (dietaryRestriction !in recipe.dietaryCompliances) {
+//                        recipeRatings[recipe] = 0.0
+//                        continue
+//                    }
+//                }
+//            }
             val requiredIngredients = recipe.ingredients
             var ingredientsInPantry = 0
             for (ingredient in requiredIngredients) {
@@ -213,7 +228,7 @@ class HomeFragment : Fragment() {
             }
             var recipeRating = 0.0
             if (recipe.cuisine in userCuisinePreferences) {
-                recipeRating = (ingredientsInPantry / requiredIngredients.size) * (1 + 0.05 * userCuisinePreferences[recipe.cuisine] as Int)
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine] as Int))
             }
             recipeRatings[recipe] = recipeRating
         }
@@ -222,6 +237,10 @@ class HomeFragment : Fragment() {
         val topRecipes = mutableListOf<Recipe>()
         for (i in 0..10) {
             topRecipes.add(sorted[i].first)
+            if (sorted[i].second > 0) {
+                Log.d(TAG, "NOT ZERO" + sorted[i].first.toString() + " " + sorted[i].second.toString())
+            }
+            Log.d(TAG, "recipe and scoring " + sorted[i].first.toString() + sorted[i].second.toString())
         }
         return topRecipes
     }
