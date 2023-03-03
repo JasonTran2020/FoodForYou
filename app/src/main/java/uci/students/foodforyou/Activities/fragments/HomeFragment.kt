@@ -48,6 +48,12 @@ class HomeFragment : Fragment() {
         // Unlike in the AppActivity, we do not pass "this" in as the owner, as that would imply the HomeFragment is the owner. The owner is actually AppActivity
         recipesViewModel= ViewModelProvider(activity as AppActivity).get(AppActivityViewModel::class.java)
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
+        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
+        postRecyclerView = view.findViewById(R.id.postRecyclerView)
+
+        postRecyclerView.adapter=recipesAdapter
+        postRecyclerView.layoutManager=LinearLayoutManager(context)
+
 
         getUsersDietaryRestrictions()
         getUsersCuisinePreferences()
@@ -66,6 +72,7 @@ class HomeFragment : Fragment() {
 
         // make function to get cuisine preferences, dietary restrictions
     }
+
 
     fun setupCurrentIngredients() {
         val database= Firebase.database.reference
@@ -89,6 +96,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Get User's dietary restrictions from database and store in list
+     */
     fun getUsersDietaryRestrictions() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
@@ -110,6 +120,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Get mapping of User's cuisine preferences from database and store in Map
+     */
     fun getUsersCuisinePreferences() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
@@ -151,6 +164,9 @@ class HomeFragment : Fragment() {
         return missingRecipeIngredients.toList()
     }
 
+    /**
+     * Determine the types of meals to recommend (breakfast, lunch, or dinner)
+     */
     private fun getMealType(): String {
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY)
@@ -164,6 +180,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Returns the recipes of the correct meal type
+     */
     private fun getRecipes(): List<*> {
         return when (getMealType()) {
             "breakfast" -> {
@@ -178,6 +197,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Gets the User's ingredients' stemmed mappings
+     */
     private fun getUsersStemmedIngredients(): MutableList<String> {
         val database= Firebase.database.reference
         val auth= Firebase.auth
@@ -201,6 +223,9 @@ class HomeFragment : Fragment() {
         return usersIngredients
     }
 
+    /**
+     * Recommends the top 10 recipes to the user from highest score to lowest score
+     */
     fun recommendRecipes(): MutableList<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
@@ -209,15 +234,17 @@ class HomeFragment : Fragment() {
         val recipeRatings = mutableMapOf<Recipe, Double>()
         for (i in recipes.indices) {
             val recipe = recipes[i] as Recipe
-            // check adheres to dietary restrictions here
-//            if (userDietaryRestrictions.size > 0) {
-//                for (dietaryRestriction in userDietaryRestrictions) {
-//                    if (dietaryRestriction !in recipe.dietaryCompliances) {
-//                        recipeRatings[recipe] = 0.0
-//                        continue
-//                    }
-//                }
-//            }
+            // check that the recipe adheres to dietary restrictions here else give it a value of 0
+            if (userDietaryRestrictions.size > 0) {
+                for (dietaryRestriction in userDietaryRestrictions) {
+                    if (dietaryRestriction !in recipe.dietaryCompliances) {
+                        recipeRatings[recipe] = 0.0
+                        continue
+                    }
+                }
+            }
+
+            // calculate percentage of ingredients in the recipe that the User has in their pantry
             val requiredIngredients = recipe.ingredients
             var ingredientsInPantry = 0
             for (ingredient in requiredIngredients) {
@@ -226,6 +253,9 @@ class HomeFragment : Fragment() {
                     ingredientsInPantry += 1
                 }
             }
+
+            // calculate recipe rating using percentage of ingredients available and the User's
+            // cuisine preferences
             var recipeRating = 0.0
             if (recipe.cuisine in userCuisinePreferences) {
                 recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine] as Int))
@@ -233,8 +263,11 @@ class HomeFragment : Fragment() {
             recipeRatings[recipe] = recipeRating
         }
 
+        // Sort recipes by order of highest score to lowest score
         val sorted = recipeRatings.toList().sortedBy { (_, value) -> value * -1}
         val topRecipes = mutableListOf<Recipe>()
+
+        // Return the top 10 scoring recipes
         for (i in 0..10) {
             topRecipes.add(sorted[i].first)
             if (sorted[i].second > 0) {
