@@ -67,7 +67,7 @@ class DisplayActivity : AppCompatActivity() {
             ingredients.add(ing.capitalize())
         }
         findMisIngs()
-        Glide.with(this).load(image).centerCrop().into(recImg)
+        Glide.with(this).load(image).centerCrop().error("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdrAYfsGt5sbUrmjHD_fLDuymf2GcjDji78ed2GOg&s").into(recImg)
         ingAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, ingredients)
         inDis.adapter = ingAdapter
         cookButt=findViewById<Button>(R.id.cookBut)
