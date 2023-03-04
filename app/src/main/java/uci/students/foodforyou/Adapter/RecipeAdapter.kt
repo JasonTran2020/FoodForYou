@@ -11,10 +11,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import uci.students.foodforyou.Activities.DisplayActivity
+import uci.students.foodforyou.Activities.fragments.HomeFragment
 import uci.students.foodforyou.Models.Recipe
 import uci.students.foodforyou.R
 
-class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.ViewHolder>() {
+class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>, val homeFragment: HomeFragment) : RecyclerView.Adapter<RecipeAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,13 +45,9 @@ class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>) :
             Glide.with(itemView).load(recipe.imageUrl).error("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdrAYfsGt5sbUrmjHD_fLDuymf2GcjDji78ed2GOg&s").into(ivRecipeImage)
 
             tvMissingIngr.text=recipe.missingIngredient.joinToString(", ")
-            //TODO("Finish adding the other content and setting on click listen for btnCook")
+
             btnCook.setOnClickListener {
-                val intent = Intent(context, DisplayActivity::class.java)
-                //A Recipe is Parcelable, so we can just pass the object in as an extra for the Intent
-                intent.putExtra("ParcelableRecipe",recipe)
-                //We do not call finish as we want the user to be able to return back here
-                context.startActivity(intent)
+                homeFragment.onClick(itemView,recipe)
             }
         }
     }

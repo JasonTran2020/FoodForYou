@@ -26,4 +26,8 @@
 
     <string name="welcomeUser">Welcome Back</string>
     <string name="userImage">User Image</string>
+    <string name="did_you_like_the_recipe">Did you like the recipe?</string>
+    <string name="yes">Yes</string>
+    <string name="not_enough_time">Not enough time</string>
+    <string name="no">No</string>
 </resources>

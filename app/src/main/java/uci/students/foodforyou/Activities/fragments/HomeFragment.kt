@@ -1,11 +1,18 @@
 package uci.students.foodforyou.Activities.fragments
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,17 +20,19 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import uci.students.foodforyou.Activities.AppActivity
+import uci.students.foodforyou.Activities.DisplayActivity
 import uci.students.foodforyou.Adapter.RecipeAdapter
 import uci.students.foodforyou.Models.AppActivityViewModel
 import uci.students.foodforyou.Models.Recipe
 import uci.students.foodforyou.R
 import java.util.*
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(){
     val TAG="HomeFragment"
     lateinit var postRecyclerView: RecyclerView
     lateinit var recipesViewModel:AppActivityViewModel
     lateinit var recipesAdapter:RecipeAdapter
+    lateinit var activityLauncher: ActivityResultLauncher<Intent>
     val listOfPantryIngredients= mutableListOf<String>()
     val recommendedRecipes= mutableListOf<Recipe>()
     val missingIngredientsForEachRecipe= mutableListOf<List<String>>()
@@ -48,18 +57,15 @@ class HomeFragment : Fragment() {
         // Unlike in the AppActivity, we do not pass "this" in as the owner, as that would imply the HomeFragment is the owner. The owner is actually AppActivity
         recipesViewModel= ViewModelProvider(activity as AppActivity).get(AppActivityViewModel::class.java)
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
-        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
-        postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
-        postRecyclerView.adapter=recipesAdapter
-        postRecyclerView.layoutManager=LinearLayoutManager(context)
+        postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
 
         getUsersDietaryRestrictions()
         getUsersCuisinePreferences()
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
         recommendedRecipes.addAll(0,recommendRecipes())
-        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes) }!!
+        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
         postRecyclerView.adapter=recipesAdapter
@@ -70,6 +76,15 @@ class HomeFragment : Fragment() {
         setupCurrentIngredients()
         Log.d(TAG, "set up ingredients")
 
+
+        activityLauncher=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            Toast.makeText(context,"Returning from displayActivity",Toast.LENGTH_SHORT).show()
+            val postDisplayDialogFragment=PostDisplayDialogFragment()
+            val bundle=Bundle()
+            bundle.putParcelable("recipe", it.data?.getParcelableExtra("recipe"))
+            postDisplayDialogFragment.arguments=bundle
+            postDisplayDialogFragment.show(childFragmentManager,"PostRecipeSurvey")
+        }
         // make function to get cuisine preferences, dietary restrictions
     }
 
@@ -276,5 +291,9 @@ class HomeFragment : Fragment() {
             Log.d(TAG, "recipe and scoring " + sorted[i].first.toString() + sorted[i].second.toString())
         }
         return topRecipes
+    }
+
+    fun onClick(p0: View?,recipe:Recipe) {
+        activityLauncher.launch(Intent(context, DisplayActivity::class.java).putExtra("ParcelableRecipe",recipe))
     }
 }

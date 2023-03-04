@@ -17,6 +17,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
+import androidx.core.os.BuildCompat
 import uci.students.foodforyou.Models.Recipe
 
 
@@ -82,6 +85,26 @@ class DisplayActivity : AppCompatActivity() {
             }
             ingAdapter.notifyDataSetChanged()
         }
+
+        //Code for saving the Recipe when hitting the back button. Yea we could have just saved the recipe when launching this activity, but this is more interesting
+        onBackPressedDispatcher.addCallback(this ,object:OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed() {
+                val intent=Intent()
+                if (getIntent().hasExtra("ParcelableRecipe")) {
+                    val recipe = getIntent().getParcelableExtra<Recipe>("ParcelableRecipe")
+                    intent.putExtra("recipe",recipe)
+                }
+                setResult(RESULT_OK,intent)
+                finish()
+            }
+
+        })
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
     fun findMisIngs()
     {
