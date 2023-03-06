@@ -264,8 +264,12 @@ class HomeFragment : Fragment(){
             var ingredientsInPantry = 0
             for (ingredient in requiredIngredients) {
                 val stemmedIngredient = ingredientToStemmedIngredient[ingredient]
-                if (stemmedIngredient in usersIngredients) {
-                    ingredientsInPantry += 1
+                for (uingredient in usersIngredients) {
+                    //Updated to check if our pantry is a subsequence of the required ingredients since required
+                    //sometimes has measurements as well
+                    if (stemmedIngredient.toString().contains(uingredient, true)) {
+                        ingredientsInPantry += 1
+                    }
                 }
             }
 
