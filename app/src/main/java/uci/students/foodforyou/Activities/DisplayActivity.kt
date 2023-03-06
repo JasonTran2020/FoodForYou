@@ -37,6 +37,7 @@ class DisplayActivity : AppCompatActivity() {
     private lateinit var ings:List<String>
     private lateinit var instruct:String
     private lateinit var image:String
+    private lateinit var recipe: Recipe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display)
@@ -45,7 +46,7 @@ class DisplayActivity : AppCompatActivity() {
         //Launching this activity with the test button
         if (intent.hasExtra("ParcelableRecipe"))
         {
-            val recipe=intent.getParcelableExtra<Recipe>("ParcelableRecipe")
+            recipe= intent.getParcelableExtra<Recipe>("ParcelableRecipe")!!
             name= recipe!!.name
             ings = recipe.ingredients
             instruct= recipe.webpageUrl
@@ -91,10 +92,7 @@ class DisplayActivity : AppCompatActivity() {
         {
             override fun handleOnBackPressed() {
                 val intent=Intent()
-                if (getIntent().hasExtra("ParcelableRecipe")) {
-                    val recipe = getIntent().getParcelableExtra<Recipe>("ParcelableRecipe")
-                    intent.putExtra("recipe",recipe)
-                }
+                intent.putExtra("recipe",recipe)
                 setResult(RESULT_OK,intent)
                 finish()
             }
