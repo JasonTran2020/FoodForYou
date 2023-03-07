@@ -1,16 +1,13 @@
 package uci.students.foodforyou.Activities.fragments
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
@@ -37,7 +34,7 @@ class HomeFragment : Fragment(){
     val recommendedRecipes= mutableListOf<Recipe>()
     val missingIngredientsForEachRecipe= mutableListOf<List<String>>()
 
-    val userDietaryRestrictions = mutableListOf<String>()
+    var userDietaryRestrictions = mutableListOf<String>()
 
     val formatRestrictions = mapOf("Vegan" to "vegan", "Vegetarian" to "vegetarian", "Pescatarian" to "pescatarian", "Milk" to "milk-free", "Egg" to "egg-free", "Fish" to "fish-free", "Shellfish" to "shellfish-free", "Nuts" to "nut-free", "Peanuts" to "peanut-free", "Soy" to "soy-free", "Pork" to "pork-free")
     var userCuisinePreferences = mutableMapOf<String, Int>()
@@ -61,8 +58,16 @@ class HomeFragment : Fragment(){
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
 
-        getUsersDietaryRestrictions()
-        getUsersCuisinePreferences()
+//        getUsersDietaryRestrictions()
+//        getUsersCuisinePreferences()
+        userDietaryRestrictions = mutableListOf<String>("egg-free", "peanut-free")
+        userCuisinePreferences = mutableMapOf("brazilian" to 0, "british" to 0, "cajun creole" to 0,
+            "chinese" to 0, "filipino" to 0, "french" to 0, "greek" to 5, "indian" to 5, "irish" to 0,
+            "italian" to 5, "jamaican" to 0, "japanese" to 0, "korean" to 0, "mexican" to 0,
+            "moroccan" to 0, "russian" to 0, "southern us" to 0, "spanish" to 0, "thai" to 0,
+            "vietnamese" to 0)
+
+
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
         recommendedRecipes.addAll(0,recommendRecipes())
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
@@ -121,11 +126,7 @@ class HomeFragment : Fragment(){
         database.child("user_survey_preference").child(user.uid).child("allergies").get().addOnCompleteListener {
             if (it.isSuccessful && it.result.value != null) {
                 userDietaryRestrictions.clear()
-                Log.d(TAG, "aaaaa" + it.result)
-                Log.d(TAG, "bbbbb" + (it.result.value as Any).javaClass.name)
                 for (dietaryRestriction in it.result.value as List<String>) {
-                    Log.d(TAG, "ccc " + dietaryRestriction)
-                    Log.d(TAG, "ddd" + formatRestrictions[dietaryRestriction].toString())
                     if (dietaryRestriction in formatRestrictions) {
                         val restriction = formatRestrictions[dietaryRestriction] as String
                         userDietaryRestrictions.add(restriction)
@@ -159,7 +160,7 @@ class HomeFragment : Fragment(){
      * Due to the possibility that the recipe's ingredients are overly specified(i.e., yolk of eggs), while a user puts a much more simple ingredients (i.e. eggs)
      * This functions considers an ingredient to be shared if an ingredient from the user is a sub-sequence of an ingredient from the recipe
      */
-    private fun getListOfMissingIngredient(recipe:Recipe,userIngredients:List<String>): List<String> {
+    fun getListOfMissingIngredient(recipe:Recipe,userIngredients:List<String>): List<String> {
         //missingRecipeIngredients needs to be a copy of recipe.ingredients as we will be modifying recipeIngredients to contain only the missing ingredients
         val missingRecipeIngredients=recipe.ingredients.toMutableList()
 
@@ -182,7 +183,7 @@ class HomeFragment : Fragment(){
     /**
      * Determine the types of meals to recommend (breakfast, lunch, or dinner)
      */
-    private fun getMealType(): String {
+    fun getMealType(): String {
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY)
 
@@ -198,7 +199,7 @@ class HomeFragment : Fragment(){
     /**
      * Returns the recipes of the correct meal type
      */
-    private fun getRecipes(): List<*> {
+    fun getRecipes(): List<*> {
         return when (getMealType()) {
             "breakfast" -> {
                 recipesViewModel.breakfastRecipes
@@ -212,10 +213,21 @@ class HomeFragment : Fragment(){
         }
     }
 
+    fun getSampleUsersStemmedIngredients(): MutableList<String> {
+        val sampleUsersIngredients = mutableListOf<String>("chicken breast", "olive oil", "salt", "pepper", "pasta", "rice", "brown rice", "lemon")
+        val ret = mutableListOf<String>()
+        for (ingredient in sampleUsersIngredients) {
+            if (ingredient.lowercase() in recipesViewModel.ingredientsToStemmed) {
+                ret.add(recipesViewModel.ingredientsToStemmed[ingredient.lowercase()] as String)
+            }
+        }
+        return ret
+    }
+
     /**
      * Gets the User's ingredients' stemmed mappings
      */
-    private fun getUsersStemmedIngredients(): MutableList<String> {
+    fun getUsersStemmedIngredients(): MutableList<String> {
         val database= Firebase.database.reference
         val auth= Firebase.auth
         val user= auth.currentUser ?: return mutableListOf()
@@ -228,7 +240,7 @@ class HomeFragment : Fragment(){
                 for (ingredient in it.result.value as List<String>) {
                     Log.d(TAG, ingredient.toString() + " testing")
                     if (ingredient.lowercase() in recipesViewModel.ingredientsToStemmed) {
-                        Log.d(TAG, ingredient.toString() + " in dictionary")
+                        Log.d(TAG, ingredient + " in dictionary")
                         usersIngredients.add(ingredient)
                         Log.d(TAG, usersIngredients.toString())
                     }
@@ -241,33 +253,36 @@ class HomeFragment : Fragment(){
     /**
      * Recommends the top 10 recipes to the user from highest score to lowest score
      */
-    fun recommendRecipes(): MutableList<Recipe> {
+    fun recommendRecipes(): List<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
-        val usersIngredients = getUsersStemmedIngredients()
+//        val usersIngredients = getUsersStemmedIngredients()
+        val usersIngredients = getSampleUsersStemmedIngredients()
+
         Log.d(TAG, "USERSINGREDIENTS " + usersIngredients)
         val recipeRatings = mutableMapOf<Recipe, Double>()
         for (i in recipes.indices) {
             val recipe = recipes[i] as Recipe
             // check that the recipe adheres to dietary restrictions here else give it a value of 0
-            if (userDietaryRestrictions.size > 0) {
-                for (dietaryRestriction in userDietaryRestrictions) {
-                    if (dietaryRestriction !in recipe.dietaryCompliances) {
-                        recipeRatings[recipe] = 0.0
-                        continue
-                    }
-                }
-            }
+//            if (userDietaryRestrictions.size > 0) {
+//                for (dietaryRestriction in userDietaryRestrictions) {
+//                    if (dietaryRestriction !in recipe.dietaryCompliances) {
+//                        recipeRatings[recipe] = 0.0
+//                        continue
+//                    }
+//                }
+//            }
 
             // calculate percentage of ingredients in the recipe that the User has in their pantry
             val requiredIngredients = recipe.ingredients
             var ingredientsInPantry = 0
             for (ingredient in requiredIngredients) {
                 val stemmedIngredient = ingredientToStemmedIngredient[ingredient]
-                for (uingredient in usersIngredients) {
+                Log.d(TAG, "stemmed recipe ingredient $stemmedIngredient")
+                for (userIngredient in usersIngredients) {
                     //Updated to check if our pantry is a subsequence of the required ingredients since required
                     //sometimes has measurements as well
-                    if (stemmedIngredient.toString().contains(uingredient, true)) {
+                    if (stemmedIngredient.toString().contains(userIngredient, true)) {
                         ingredientsInPantry += 1
                     }
                 }
@@ -276,8 +291,8 @@ class HomeFragment : Fragment(){
             // calculate recipe rating using percentage of ingredients available and the User's
             // cuisine preferences
             var recipeRating = 0.0
-            if (recipe.cuisine in userCuisinePreferences) {
-                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine] as Int))
+            if (recipe.cuisine.lowercase() in userCuisinePreferences) {
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Int))
             }
             recipeRatings[recipe] = recipeRating
         }
@@ -289,9 +304,6 @@ class HomeFragment : Fragment(){
         // Return the top 10 scoring recipes
         for (i in 0..10) {
             topRecipes.add(sorted[i].first)
-            if (sorted[i].second > 0) {
-                Log.d(TAG, "NOT ZERO" + sorted[i].first.toString() + " " + sorted[i].second.toString())
-            }
             Log.d(TAG, "recipe and scoring " + sorted[i].first.toString() + sorted[i].second.toString())
         }
         return topRecipes
