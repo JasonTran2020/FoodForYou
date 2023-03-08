@@ -39,6 +39,8 @@ class HomeFragment : Fragment(){
     val formatRestrictions = mapOf("Vegan" to "vegan", "Vegetarian" to "vegetarian", "Pescatarian" to "pescatarian", "Milk" to "milk-free", "Egg" to "egg-free", "Fish" to "fish-free", "Shellfish" to "shellfish-free", "Nuts" to "nut-free", "Peanuts" to "peanut-free", "Soy" to "soy-free", "Pork" to "pork-free")
     var userCuisinePreferences = mutableMapOf<String, Int>()
 
+    var usersIngredients = mutableListOf<String>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,27 +60,28 @@ class HomeFragment : Fragment(){
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
 
-//        getUsersDietaryRestrictions()
+        getUsersDietaryRestrictions()
 //        getUsersCuisinePreferences()
-        userDietaryRestrictions = mutableListOf<String>("egg-free", "peanut-free")
-        userCuisinePreferences = mutableMapOf("brazilian" to 0, "british" to 0, "cajun creole" to 0,
-            "chinese" to 0, "filipino" to 0, "french" to 0, "greek" to 5, "indian" to 5, "irish" to 0,
-            "italian" to 5, "jamaican" to 0, "japanese" to 0, "korean" to 0, "mexican" to 0,
-            "moroccan" to 0, "russian" to 0, "southern us" to 0, "spanish" to 0, "thai" to 0,
-            "vietnamese" to 0)
+//        userDietaryRestrictions = mutableListOf<String>("egg-free", "peanut-free")
+//        userCuisinePreferences = mutableMapOf("brazilian" to 0, "british" to 0, "cajun creole" to 0,
+//            "chinese" to 0, "filipino" to 0, "french" to 0, "greek" to 5, "indian" to 5, "irish" to 0,
+//            "italian" to 5, "jamaican" to 0, "japanese" to 0, "korean" to 0, "mexican" to 0,
+//            "moroccan" to 0, "russian" to 0, "southern us" to 0, "spanish" to 0, "thai" to 0,
+//            "vietnamese" to 0)
 
 
         //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
-        recommendedRecipes.addAll(0,recommendRecipes())
-        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
-        postRecyclerView = view.findViewById(R.id.postRecyclerView)
+//        recommendedRecipes.addAll(0,recommendRecipes())
 
-        postRecyclerView.adapter=recipesAdapter
-        postRecyclerView.layoutManager=LinearLayoutManager(context)
         //Next steps
         // Set click listeners for each recipe. Likely done in the adapter
         // Find a default image for food, because there are way too many dead images
         setupCurrentIngredients()
+        recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
+        postRecyclerView = view.findViewById(R.id.postRecyclerView)
+        postRecyclerView.adapter=recipesAdapter
+        postRecyclerView.layoutManager=LinearLayoutManager(context)
+
         Log.d(TAG, "set up ingredients")
 
 
@@ -133,6 +136,7 @@ class HomeFragment : Fragment(){
                     }
                 }
             }
+            getUsersCuisinePreferences()
         }
     }
 
@@ -151,6 +155,7 @@ class HomeFragment : Fragment(){
                     userCuisinePreferences[entry.key] = entry.value
                 }
             }
+            getUsersStemmedIngredients()
             Log.d(TAG, "testing123 $userCuisinePreferences")
         }
     }
@@ -227,11 +232,10 @@ class HomeFragment : Fragment(){
     /**
      * Gets the User's ingredients' stemmed mappings
      */
-    fun getUsersStemmedIngredients(): MutableList<String> {
+    fun getUsersStemmedIngredients() {
         val database= Firebase.database.reference
         val auth= Firebase.auth
-        val user= auth.currentUser ?: return mutableListOf()
-        var usersIngredients = mutableListOf<String>()
+        val user= auth.currentUser ?: return
 
         database.child("user_pantry").child(user.uid).get().addOnCompleteListener {
             if (it.isSuccessful && it.result.value != null) {
@@ -246,8 +250,10 @@ class HomeFragment : Fragment(){
                     }
                 }
             }
+            recommendedRecipes.addAll(0,recommendRecipes())
+            recipesAdapter.notifyDataSetChanged()
         }
-        return usersIngredients
+
     }
 
     /**
@@ -256,22 +262,11 @@ class HomeFragment : Fragment(){
     fun recommendRecipes(): List<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
-//        val usersIngredients = getUsersStemmedIngredients()
-        val usersIngredients = getSampleUsersStemmedIngredients()
 
         Log.d(TAG, "USERSINGREDIENTS " + usersIngredients)
         val recipeRatings = mutableMapOf<Recipe, Double>()
         for (i in recipes.indices) {
             val recipe = recipes[i] as Recipe
-            // check that the recipe adheres to dietary restrictions here else give it a value of 0
-//            if (userDietaryRestrictions.size > 0) {
-//                for (dietaryRestriction in userDietaryRestrictions) {
-//                    if (dietaryRestriction !in recipe.dietaryCompliances) {
-//                        recipeRatings[recipe] = 0.0
-//                        continue
-//                    }
-//                }
-//            }
 
             // calculate percentage of ingredients in the recipe that the User has in their pantry
             val requiredIngredients = recipe.ingredients
@@ -292,7 +287,16 @@ class HomeFragment : Fragment(){
             // cuisine preferences
             var recipeRating = 0.0
             if (recipe.cuisine.lowercase() in userCuisinePreferences) {
-                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Int))
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Double))
+            }
+
+            // check that the recipe adheres to dietary restrictions here else give it a value of 0
+            if (userDietaryRestrictions.size > 0) {
+                for (dietaryRestriction in userDietaryRestrictions) {
+                    if (dietaryRestriction !in recipe.dietaryCompliances) {
+                        recipeRatings[recipe] = 0.0
+                    }
+                }
             }
             recipeRatings[recipe] = recipeRating
         }
