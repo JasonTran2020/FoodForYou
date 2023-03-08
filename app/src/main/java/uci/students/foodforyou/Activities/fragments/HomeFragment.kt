@@ -152,7 +152,7 @@ class HomeFragment : Fragment(){
                 userCuisinePreferences.clear()
                 val preferences = it.result.value as Map<String, Int>
                 for(entry in preferences) {
-                    userCuisinePreferences[entry.key] = entry.value
+                    userCuisinePreferences[entry.key.lowercase()] = entry.value
                 }
             }
             getUsersStemmedIngredients()
@@ -273,7 +273,6 @@ class HomeFragment : Fragment(){
             var ingredientsInPantry = 0
             for (ingredient in requiredIngredients) {
                 val stemmedIngredient = ingredientToStemmedIngredient[ingredient]
-                Log.d(TAG, "stemmed recipe ingredient $stemmedIngredient")
                 for (userIngredient in usersIngredients) {
                     //Updated to check if our pantry is a subsequence of the required ingredients since required
                     //sometimes has measurements as well
@@ -287,7 +286,7 @@ class HomeFragment : Fragment(){
             // cuisine preferences
             var recipeRating = 0.0
             if (recipe.cuisine.lowercase() in userCuisinePreferences) {
-                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Double))
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Number).toInt())
             }
 
             // check that the recipe adheres to dietary restrictions here else give it a value of 0
