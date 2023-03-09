@@ -60,18 +60,7 @@ class HomeFragment : Fragment(){
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
 
 
-        getUsersDietaryRestrictions()
-//        getUsersCuisinePreferences()
-//        userDietaryRestrictions = mutableListOf<String>("egg-free", "peanut-free")
-//        userCuisinePreferences = mutableMapOf("brazilian" to 0, "british" to 0, "cajun creole" to 0,
-//            "chinese" to 0, "filipino" to 0, "french" to 0, "greek" to 5, "indian" to 5, "irish" to 0,
-//            "italian" to 5, "jamaican" to 0, "japanese" to 0, "korean" to 0, "mexican" to 0,
-//            "moroccan" to 0, "russian" to 0, "southern us" to 0, "spanish" to 0, "thai" to 0,
-//            "vietnamese" to 0)
-
-
-        //Temporarily, this will load all the lunch recipes, just to show that the recyclerview works, but this should be replaced with the recipes we recommend, in sorted order
-//        recommendedRecipes.addAll(0,recommendRecipes())
+        recommendRecipes()
 
         //Next steps
         // Set click listeners for each recipe. Likely done in the adapter
@@ -117,6 +106,10 @@ class HomeFragment : Fragment(){
             }
             recipesAdapter.notifyDataSetChanged()
         }
+    }
+
+    fun recommendRecipes() {
+        getUsersDietaryRestrictions()
     }
 
     /**
@@ -218,17 +211,6 @@ class HomeFragment : Fragment(){
         }
     }
 
-    fun getSampleUsersStemmedIngredients(): MutableList<String> {
-        val sampleUsersIngredients = mutableListOf<String>("chicken breast", "olive oil", "salt", "pepper", "pasta", "rice", "brown rice", "lemon")
-        val ret = mutableListOf<String>()
-        for (ingredient in sampleUsersIngredients) {
-            if (ingredient.lowercase() in recipesViewModel.ingredientsToStemmed) {
-                ret.add(recipesViewModel.ingredientsToStemmed[ingredient.lowercase()] as String)
-            }
-        }
-        return ret
-    }
-
     /**
      * Gets the User's ingredients' stemmed mappings
      */
@@ -250,7 +232,7 @@ class HomeFragment : Fragment(){
                     }
                 }
             }
-            recommendedRecipes.addAll(0,recommendRecipes())
+            recommendedRecipes.addAll(0,getRecommendRecipes())
             recipesAdapter.notifyDataSetChanged()
         }
 
@@ -259,7 +241,7 @@ class HomeFragment : Fragment(){
     /**
      * Recommends the top 10 recipes to the user from highest score to lowest score
      */
-    fun recommendRecipes(): List<Recipe> {
+    fun getRecommendRecipes(): List<Recipe> {
         val recipes = getRecipes()
         val ingredientToStemmedIngredient = recipesViewModel.ingredientsToStemmed
 
