@@ -2,6 +2,7 @@ package uci.students.foodforyou.Activities.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import uci.students.foodforyou.Activities.LoginActivity
 import uci.students.foodforyou.Activities.SurveyActivity
 
 import uci.students.foodforyou.R
@@ -42,6 +44,15 @@ class ProfileFragment : Fragment() {
 
         algyBtn.setOnClickListener{
             redirectSurvey()
+        }
+        val logoutBtn=view.findViewById<Button>(R.id.logOutBtn)
+        auth= Firebase.auth
+        logoutBtn.setOnClickListener {
+            auth.signOut()
+            activity?.let{
+                val intent = Intent(it, LoginActivity::class.java)
+                it.startActivity(intent)
+            }
         }
     }
 

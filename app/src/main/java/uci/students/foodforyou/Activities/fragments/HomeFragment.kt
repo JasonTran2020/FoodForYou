@@ -150,6 +150,7 @@ class HomeFragment : Fragment(){
             }
             getUsersStemmedIngredients()
             Log.d(TAG, "testing123 $userCuisinePreferences")
+            setupCurrentIngredients()
         }
     }
 

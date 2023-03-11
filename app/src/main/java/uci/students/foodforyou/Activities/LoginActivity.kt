@@ -90,7 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 //Go to main menu
                 if (it.result.value!=null)
                 {
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, AppActivity::class.java)
                     finish()
                     startActivity(intent)
                 }
