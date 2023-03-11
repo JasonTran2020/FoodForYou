@@ -32,7 +32,6 @@ class HomeFragment : Fragment(){
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
     val listOfPantryIngredients= mutableListOf<String>()
     val recommendedRecipes= mutableListOf<Recipe>()
-    val missingIngredientsForEachRecipe= mutableListOf<List<String>>()
 
     var userDietaryRestrictions = mutableListOf<String>()
 
@@ -62,10 +61,7 @@ class HomeFragment : Fragment(){
 
         recommendRecipes()
 
-        //Next steps
-        // Set click listeners for each recipe. Likely done in the adapter
-        // Find a default image for food, because there are way too many dead images
-        setupCurrentIngredients()
+
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
         postRecyclerView.adapter=recipesAdapter
@@ -81,6 +77,7 @@ class HomeFragment : Fragment(){
             bundle.putParcelable("recipe", it.data?.getParcelableExtra("recipe"))
             postDisplayDialogFragment.arguments=bundle
             postDisplayDialogFragment.show(childFragmentManager,"PostRecipeSurvey")
+            recommendRecipes()
         }
         // make function to get cuisine preferences, dietary restrictions
     }
@@ -109,6 +106,8 @@ class HomeFragment : Fragment(){
     }
 
     fun recommendRecipes() {
+        //Added this in since recipes were duplicating if we switched between fragments
+        recommendedRecipes.clear()
         getUsersDietaryRestrictions()
     }
 
