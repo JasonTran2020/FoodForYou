@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +31,7 @@ class HomeFragment : Fragment(){
     lateinit var recipesViewModel:AppActivityViewModel
     lateinit var recipesAdapter:RecipeAdapter
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
+    private lateinit var refBut:Button
     val listOfPantryIngredients= mutableListOf<String>()
     val recommendedRecipes= mutableListOf<Recipe>()
 
@@ -57,10 +59,9 @@ class HomeFragment : Fragment(){
         Log.d(TAG,"In the Homefragment we have the recipes. Here are some for example ${recipesViewModel.breakfastRecipes}")
 
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
-
+        refBut = view.findViewById<Button>(R.id.refrbutton)
 
         recommendRecipes()
-
 
         recipesAdapter= context?.let { RecipeAdapter(it,recommendedRecipes,this) }!!
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
@@ -77,6 +78,9 @@ class HomeFragment : Fragment(){
             bundle.putParcelable("recipe", it.data?.getParcelableExtra("recipe"))
             postDisplayDialogFragment.arguments=bundle
             postDisplayDialogFragment.show(childFragmentManager,"PostRecipeSurvey")
+            recommendRecipes()
+        }
+        refBut.setOnClickListener{
             recommendRecipes()
         }
         // make function to get cuisine preferences, dietary restrictions
@@ -221,6 +225,7 @@ class HomeFragment : Fragment(){
 
         database.child("user_pantry").child(user.uid).get().addOnCompleteListener {
             if (it.isSuccessful && it.result.value != null) {
+                usersIngredients.clear()
                 Log.d(TAG, "debugga " + it.result.value.toString())
                 Log.d(TAG, "debugga2" + recipesViewModel.ingredientsToStemmed)
                 for (ingredient in it.result.value as List<String>) {
@@ -268,7 +273,7 @@ class HomeFragment : Fragment(){
             // cuisine preferences
             var recipeRating = 0.0
             if (recipe.cuisine.lowercase() in userCuisinePreferences) {
-                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) * (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Number).toInt())
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) + (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Number).toInt())
             }
 
             // check that the recipe adheres to dietary restrictions here else give it a value of 0
