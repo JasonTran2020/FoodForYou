@@ -64,7 +64,7 @@ class PostDisplayDialogFragment: DialogFragment() {
         btnNo.setOnClickListener {
             val user = Firebase.auth.currentUser
             user?.let {
-                var score = database.child("user_personal_model").child(it.uid).child(mealType)
+                var score = database.child("user_personal_model").child(it.uid).child(mealType.capitalize())
                 score.setValue(ServerValue.increment(-0.5))
             }
             this.dismiss()
