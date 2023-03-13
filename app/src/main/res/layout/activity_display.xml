@@ -28,32 +28,34 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/misTxt"
+        android:id="@+id/misIngTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text=""
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="List of Missing Ingredients:"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.068"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cookBut" />
 
     <ListView
         android:id="@+id/misIng"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/misTxt"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="?attr/actionBarSize"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="?attr/actionBarSize"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/misIngTxt"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/cookBut"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="Cook Now!"
+        android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rimage" />
