@@ -188,14 +188,42 @@ class HomeFragment : Fragment(){
     fun getMealType(): String {
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY)
-
-        return if (hour < 11) {
-            "breakfast"
-        } else if (hour < 17) {
-            "lunch"
-        } else {
-            "dinner"
+        val database= Firebase.database.reference
+        val auth= Firebase.auth
+        val user = Firebase.auth.currentUser
+        var meals = mutableListOf<String>()
+        var toReturn = ""
+        user?.let {
+            database.child("user_pantry").child(it.uid).get().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (it.result.value != null) {
+                        val products = it.result.value as List<String>
+                        if (products.isEmpty() == false) {
+                            //Clear panIng first as it made already have content from switching off this fragment and back
+                            meals.clear()
+                            for (item in products) {
+                                meals.add(item)
+                            }
+                        }
+                    }
+                }
+            }
+            if (meals.size == 1){
+                toReturn = meals[0]
+            }
+            else{
+                if (hour < 11 && meals.contains("breakfast")) {
+                    toReturn = "breakfast"
+                } else if (hour < 17 && meals.contains("lunch")) {
+                    toReturn ="lunch"
+                } else if (meals.contains("dinner")){
+                    toReturn = "dinner"
+                } else{
+                    toReturn = "lunch"
+                }
+            }
         }
+        return toReturn
     }
 
     /**
@@ -292,7 +320,7 @@ class HomeFragment : Fragment(){
         val topRecipes = mutableListOf<Recipe>()
 
         // Return the top 10 scoring recipes
-        for (i in 0..10) {
+        for (i in 0..30) {
             topRecipes.add(sorted[i].first)
             Log.d(TAG, "recipe and scoring " + sorted[i].first.toString() + sorted[i].second.toString())
         }
