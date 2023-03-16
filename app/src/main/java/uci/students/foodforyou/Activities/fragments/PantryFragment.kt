@@ -73,6 +73,7 @@ class PantryFragment : Fragment() {
         user?.let {
             database.child("user_pantry").child(it.uid).get().addOnCompleteListener {
                 if (it.isSuccessful) {
+                    panIng.clear()
                     if (it.result.value != null) {
                         val products = it.result.value as List<String>
                         if (products.isEmpty() == false) {
@@ -81,9 +82,9 @@ class PantryFragment : Fragment() {
                             for (item in products) {
                                 panIng.add(item)
                             }
-                            panAdapter.notifyDataSetChanged()
                         }
                     }
+                    panAdapter.notifyDataSetChanged()
                 }
             }
         }

@@ -93,8 +93,8 @@ class HomeFragment : Fragment(){
         val database= Firebase.database.reference
         val auth= Firebase.auth
         val user= auth.currentUser ?: return
-
         database.child(getString(R.string.DatabaseIngredientsPantry)).child(user.uid).get().addOnCompleteListener {
+            listOfPantryIngredients.clear()
             if (it.isSuccessful && it.result.value!=null)
             {
                 listOfPantryIngredients.clear()
@@ -254,8 +254,8 @@ class HomeFragment : Fragment(){
         val user= auth.currentUser ?: return
 
         database.child("user_pantry").child(user.uid).get().addOnCompleteListener {
+            usersIngredients.clear()
             if (it.isSuccessful && it.result.value != null) {
-                usersIngredients.clear()
                 Log.d(TAG, "debugga " + it.result.value.toString())
                 Log.d(TAG, "debugga2" + recipesViewModel.ingredientsToStemmed)
                 for (ingredient in it.result.value as List<String>) {
