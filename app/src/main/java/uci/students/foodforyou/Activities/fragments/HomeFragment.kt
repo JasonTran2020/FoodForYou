@@ -315,7 +315,7 @@ class HomeFragment : Fragment(){
             if (userDietaryRestrictions.size > 0) {
                 for (dietaryRestriction in userDietaryRestrictions) {
                     if (dietaryRestriction !in recipe.dietaryCompliances) {
-                        recipeRatings[recipe] = 0.0
+                        recipeRatings[recipe] = -1.0
                     }
                 }
             }
