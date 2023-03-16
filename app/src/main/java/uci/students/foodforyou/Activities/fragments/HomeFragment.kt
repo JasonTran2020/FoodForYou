@@ -94,12 +94,14 @@ class HomeFragment : Fragment(){
         val auth= Firebase.auth
         val user= auth.currentUser ?: return
         database.child(getString(R.string.DatabaseIngredientsPantry)).child(user.uid).get().addOnCompleteListener {
-            listOfPantryIngredients.clear()
             if (it.isSuccessful && it.result.value!=null)
             {
                 listOfPantryIngredients.clear()
                 listOfPantryIngredients.addAll(it.result.value as List<String>)
 
+            }
+            else if (it.result.value == null){
+                listOfPantryIngredients.clear()
             }
             //For each recipe, add the missing ingredients to the object
             for (recipe in recommendedRecipes)
@@ -254,8 +256,8 @@ class HomeFragment : Fragment(){
         val user= auth.currentUser ?: return
 
         database.child("user_pantry").child(user.uid).get().addOnCompleteListener {
-            usersIngredients.clear()
             if (it.isSuccessful && it.result.value != null) {
+                usersIngredients.clear()
                 Log.d(TAG, "debugga " + it.result.value.toString())
                 Log.d(TAG, "debugga2" + recipesViewModel.ingredientsToStemmed)
                 for (ingredient in it.result.value as List<String>) {
@@ -266,6 +268,9 @@ class HomeFragment : Fragment(){
                         Log.d(TAG, usersIngredients.toString())
                     }
                 }
+            }
+            else if (it.result.value == null){
+                usersIngredients.clear()
             }
             recommendedRecipes.addAll(0,getRecommendRecipes())
             recipesAdapter.notifyDataSetChanged()
