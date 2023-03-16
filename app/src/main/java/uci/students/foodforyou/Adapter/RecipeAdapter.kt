@@ -37,10 +37,11 @@ class RecipeAdapter(val context: Context, val recommendedRecipes:List<Recipe>, v
         val ivRecipeImage=itemView.findViewById<ImageView>(R.id.ivRecipeImage)
         val tvRecipeName=itemView.findViewById<TextView>(R.id.tvName)
         val tvMissingIngr=itemView.findViewById<TextView>(R.id.tvMissingIngr)
+        val tvCuisine=itemView.findViewById<TextView>(R.id.tvCuisine)
         fun bind(recipe:Recipe)
         {
             tvRecipeName.text=recipe.name
-
+            tvCuisine.text="Cuisine: ${recipe.cuisine.capitalize()}"
             //Load the image into the ImageView
             Glide.with(itemView).load(recipe.imageUrl).error("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdrAYfsGt5sbUrmjHD_fLDuymf2GcjDji78ed2GOg&s").into(ivRecipeImage)
 

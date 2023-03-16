@@ -51,7 +51,7 @@ class PostDisplayDialogFragment: DialogFragment() {
             val user = Firebase.auth.currentUser
             user?.let {
                 var score = database.child("user_personal_model").child(it.uid).child(mealType.capitalize())
-                score.setValue(ServerValue.increment(0.5))
+                score.setValue(ServerValue.increment(1.0))
             }
             this.dismiss()
         }
@@ -65,7 +65,14 @@ class PostDisplayDialogFragment: DialogFragment() {
             val user = Firebase.auth.currentUser
             user?.let {
                 var score = database.child("user_personal_model").child(it.uid).child(mealType.capitalize())
-                score.setValue(ServerValue.increment(-0.5))
+                //Do not allow the score to dip down below 0
+                score.get().addOnCompleteListener {
+                    if (it.isSuccessful && it.result.value as Long  >= 1)
+                    {
+                        score.setValue(ServerValue.increment(-1.0))
+                    }
+                }
+
             }
             this.dismiss()
         }

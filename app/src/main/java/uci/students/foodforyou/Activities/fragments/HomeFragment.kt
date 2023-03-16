@@ -24,6 +24,8 @@ import uci.students.foodforyou.Models.AppActivityViewModel
 import uci.students.foodforyou.Models.Recipe
 import uci.students.foodforyou.R
 import java.util.*
+import kotlin.math.log10
+import kotlin.math.log2
 
 class HomeFragment : Fragment(){
     val TAG="HomeFragment"
@@ -300,8 +302,13 @@ class HomeFragment : Fragment(){
             // calculate recipe rating using percentage of ingredients available and the User's
             // cuisine preferences
             var recipeRating = 0.0
-            if (recipe.cuisine.lowercase() in userCuisinePreferences) {
-                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) + (1 + 0.05 * (userCuisinePreferences[recipe.cuisine.lowercase()] as Number).toInt())
+
+            if (recipe.cuisine.lowercase() in userCuisinePreferences && userCuisinePreferences[recipe.cuisine.lowercase()]!! >= 1) {
+                recipeRating = ((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0)) + (.2 + log10((userCuisinePreferences[recipe.cuisine.lowercase()] as Number).toDouble()))
+            }
+            else{
+                //If the recipe's cuisine ranking does not exist, or is less 1, then only consider the score with what ingredients they have.
+                recipeRating=((ingredientsInPantry * 1.0) / (requiredIngredients.size * 1.0))
             }
 
             // check that the recipe adheres to dietary restrictions here else give it a value of 0

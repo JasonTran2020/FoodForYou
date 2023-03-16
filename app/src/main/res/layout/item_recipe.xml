@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:textSize="15sp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/ivRecipeImage"
@@ -62,9 +62,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:text="Missing Ingredients"
+        android:text="Missing Ingredients:"
         android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/ivRecipeImage"
+        app:layout_constraintTop_toBottomOf="@+id/tvCuisine" />
+
+    <TextView
+        android:id="@+id/tvCuisine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Cuisine:"
         app:layout_constraintStart_toEndOf="@+id/ivRecipeImage"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
