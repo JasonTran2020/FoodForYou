@@ -93,7 +93,7 @@ class SurveyActivity : AppCompatActivity() {
         }
         else{
             //Go to the main activity now that the user has completed the survey
-            val intent=Intent(this,MainActivity::class.java)
+            val intent=Intent(this,AppActivity::class.java)
             startActivity(intent)
             finish()
         }
